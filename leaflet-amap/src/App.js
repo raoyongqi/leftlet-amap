@@ -9,6 +9,13 @@ const formatNumber = (number) => {
   return new Intl.NumberFormat().format(number);
 };
 
+const getColorForWeight = (weight) => {
+  if (weight > 1000000) return '#FF0000'; // Red for high values
+  if (weight > 100000) return '#FF7F00'; // Orange for medium-high values
+  if (weight > 10000) return '#FFFF00'; // Yellow for medium values
+  return '#00FF00'; // Green for low values
+};
+
 const App = () => {
   useEffect(() => {
     // Initialize the map
@@ -32,8 +39,9 @@ const App = () => {
         });
 
         // Customize the cluster icon
+        const clusterColor = getColorForWeight(totalWeight);
         return L.divIcon({
-          html: `<div style="background-color: rgba(0, 128, 255, 0.7); border-radius: 50%; color: #fff; text-align: center; line-height: 40px; width: ${Math.min(totalWeight / 10, 80)}px; height: ${Math.min(totalWeight / 10, 80)}px;">${formatNumber(totalWeight)}</div>`,
+          html: `<div style="background-color: ${clusterColor}; border-radius: 50%; color: #fff; text-align: center; line-height: 40px; width: ${Math.min(totalWeight / 10, 80)}px; height: ${Math.min(totalWeight / 10, 80)}px;">${formatNumber(totalWeight)}</div>`,
           className: 'custom-cluster-icon',
           iconSize: [Math.min(totalWeight / 10, 80), Math.min(totalWeight / 10, 80)],
         });
@@ -43,9 +51,10 @@ const App = () => {
     // Add individual markers
     markersData.forEach(item => {
       const size = Math.min(item.weight * 2, 30); // Adjust size based on weight
+      const markerColor = getColorForWeight(item.weight);
       const marker = L.marker(item.position, {
         icon: L.divIcon({
-          html: `<div style="background-color: rgba(255, 128, 0, 0.7); border-radius: 50%; color: #fff; text-align: center; line-height: ${size}px; width: ${size}px; height: ${size}px;">${formatNumber(item.weight)}</div>`,
+          html: `<div style="background-color: ${markerColor}; border-radius: 50%; color: #fff; text-align: center; line-height: ${size}px; width: ${size}px; height: ${size}px;">${formatNumber(item.weight)}</div>`,
           className: 'custom-marker-icon',
           iconSize: [size, size],
         }),
