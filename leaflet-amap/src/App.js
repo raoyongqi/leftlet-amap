@@ -2,39 +2,39 @@ import React, { useEffect } from 'react';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import 'leaflet.chinatmsproviders/src/leaflet.ChineseTmsProviders';
-import 'leaflet.markercluster/dist/leaflet.markercluster'; // 引入 markercluster
+import 'leaflet.markercluster/dist/leaflet.markercluster'; // Import markercluster
 
 const App = () => {
   useEffect(() => {
-    // 初始化地图
-    const map = L.map('map').setView([31.2304, 121.4737], 13); // 定位到上海
+    // Initialize the map
+    const map = L.map('map').setView([31.2304, 121.4737], 13); // Center on Shanghai
 
-    // 使用高德地图瓦片层
+    // Add a tile layer
     L.tileLayer.chinaProvider('GaoDe.Normal.Map', {
       maxZoom: 18,
       attribution: 'Map data &copy; <a href="https://www.amap.com/">高德地图</a>'
     }).addTo(map);
 
-    // 数据点，包含权重
+    // Sample data with weights
     const markersData = [
       { position: [31.2304, 121.4737], weight: 5 },
       { position: [31.2204, 121.4837], weight: 10 },
       { position: [31.2404, 121.4637], weight: 3 },
-      // 添加更多数据点
+      // Add more data points as needed
     ];
 
-    // 创建 MarkerClusterGroup
+    // Create a MarkerClusterGroup
     const markers = L.markerClusterGroup({
       iconCreateFunction: function(cluster) {
         const childMarkers = cluster.getAllChildMarkers();
         let totalWeight = 0;
 
-        // 计算聚合点的权重总和
+        // Calculate the total weight of the cluster
         childMarkers.forEach(marker => {
           totalWeight += marker.options.weight;
         });
 
-        // 自定义聚合点的显示样式
+        // Customize the cluster icon
         return L.divIcon({
           html: `<div style="background-color: rgba(0, 128, 255, 0.7); border-radius: 50%; color: #fff; text-align: center; line-height: 40px; width: 40px; height: 40px;">${totalWeight}</div>`,
           className: 'custom-cluster-icon',
@@ -43,25 +43,30 @@ const App = () => {
       }
     });
 
-    // 添加 Marker 到 MarkerClusterGroup 中
+    // Add individual markers
     markersData.forEach(item => {
-      const marker = L.marker(item.position, { weight: item.weight });
+      const marker = L.marker(item.position, {
+        icon: L.divIcon({
+          html: `<div style="background-color: rgba(255, 128, 0, 0.7); border-radius: 50%; color: #fff; text-align: center; line-height: 20px; width: 30px; height: 30px;">${item.weight}</div>`,
+          className: 'custom-marker-icon',
+          iconSize: [30, 30],
+        }),
+        weight: item.weight
+      });
       markers.addLayer(marker);
     });
 
-    // 将 MarkerClusterGroup 添加到地图
+    // Add the MarkerClusterGroup to the map
     map.addLayer(markers);
 
-    // 清理函数，避免内存泄漏
+    // Cleanup function to avoid memory leaks
     return () => {
       map.remove();
     };
   }, []);
 
   return (
-    <div>
-      <div id="map" style={{ height: "100vh" }}></div>
-    </div>
+    <div id="map" style={{ height: '100%', width: '100%' }}></div>
   );
 };
 

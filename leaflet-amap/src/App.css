@@ -1,3 +1,8 @@
+/* 在 App.css 或者直接在 index.css 中 */
 #map {
   height: 100vh;
+  width: 100vw; /* 确保宽度也占满视口 */
+  margin: 0; /* 去掉任何默认的 margin */
+  padding: 0; /* 去掉任何默认的 padding */
+  overflow: hidden; /* 防止滚动条 */
 }
