@@ -3,6 +3,11 @@ import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import 'leaflet.chinatmsproviders/src/leaflet.ChineseTmsProviders';
 import 'leaflet.markercluster/dist/leaflet.markercluster'; // Import markercluster
+import { markersData } from './data.js'; // 引入数据和配置
+
+const formatNumber = (number) => {
+  return new Intl.NumberFormat().format(number);
+};
 
 const App = () => {
   useEffect(() => {
@@ -11,17 +16,9 @@ const App = () => {
 
     // Add a tile layer
     L.tileLayer.chinaProvider('GaoDe.Normal.Map', {
-      maxZoom: 18,
+      maxZoom: 6,
       attribution: 'Map data &copy; <a href="https://www.amap.com/">高德地图</a>'
     }).addTo(map);
-
-    // Sample data with weights
-    const markersData = [
-      { position: [31.2304, 121.4737], weight: 5 },
-      { position: [31.2204, 121.4837], weight: 10 },
-      { position: [31.2404, 121.4637], weight: 3 },
-      // Add more data points as needed
-    ];
 
     // Create a MarkerClusterGroup
     const markers = L.markerClusterGroup({
@@ -36,20 +33,21 @@ const App = () => {
 
         // Customize the cluster icon
         return L.divIcon({
-          html: `<div style="background-color: rgba(0, 128, 255, 0.7); border-radius: 50%; color: #fff; text-align: center; line-height: 40px; width: 40px; height: 40px;">${totalWeight}</div>`,
+          html: `<div style="background-color: rgba(0, 128, 255, 0.7); border-radius: 50%; color: #fff; text-align: center; line-height: 40px; width: ${Math.min(totalWeight / 10, 80)}px; height: ${Math.min(totalWeight / 10, 80)}px;">${formatNumber(totalWeight)}</div>`,
           className: 'custom-cluster-icon',
-          iconSize: [40, 40],
+          iconSize: [Math.min(totalWeight / 10, 80), Math.min(totalWeight / 10, 80)],
         });
       }
     });
 
     // Add individual markers
     markersData.forEach(item => {
+      const size = Math.min(item.weight * 2, 30); // Adjust size based on weight
       const marker = L.marker(item.position, {
         icon: L.divIcon({
-          html: `<div style="background-color: rgba(255, 128, 0, 0.7); border-radius: 50%; color: #fff; text-align: center; line-height: 20px; width: 30px; height: 30px;">${item.weight}</div>`,
+          html: `<div style="background-color: rgba(255, 128, 0, 0.7); border-radius: 50%; color: #fff; text-align: center; line-height: ${size}px; width: ${size}px; height: ${size}px;">${formatNumber(item.weight)}</div>`,
           className: 'custom-marker-icon',
-          iconSize: [30, 30],
+          iconSize: [size, size],
         }),
         weight: item.weight
       });
