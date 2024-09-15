@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "leaflet": "^1.9.4",
+    "leaflet.chinatmsproviders": "^3.0.6"
+  }
+}
